@@ -12,10 +12,38 @@ if not TOKEN:
 
 print("Token cargado OK")
 
+import re
+
+def parse_message(text):
+    pattern = r"(\w+)\s+(\w+\s+\d{4})\s+\$?([\d\.]+)"
+    match = re.match(pattern, text)
+
+    if not match:
+        return None
+
+    categoria, mes, monto = match.groups()
+    return {
+        "categoria": categoria,
+        "mes": mes,
+        "monto": float(monto)
+    }
+
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
-    print(f"Mensaje recibido: {text}")
-    await update.message.reply_text("Recibido 👌")
+
+    data = parse_message(text)
+
+    if not data:
+        await update.message.reply_text("Formato inválido 😅")
+        return
+
+    await update.message.reply_text(
+        f"Registrado:\n"
+        f"Categoría: {data['categoria']}\n"
+        f"Mes: {data['mes']}\n"
+        f"Monto: {data['monto']}"
+    )
 
 try:
     app = ApplicationBuilder().token(TOKEN).build()
