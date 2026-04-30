@@ -35,7 +35,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = parse_message(text)
 
     if not data:
-        await update.message.reply_text("Formato inválido 😅")
+        await update.message.reply_text("Formato inválido😅")
         return
 
     await update.message.reply_text(
