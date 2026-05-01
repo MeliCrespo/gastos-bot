@@ -92,6 +92,15 @@ def parse_message(text):
     # limpiar monto del texto
     texto_sin_monto = text.replace(monto_match.group(0), "").strip()
 
+    palabras = texto_sin_monto.split()
+    categoria = detectar_categoria(texto_sin_monto)
+    
+    # sacar categoría de la observación
+    if palabras and palabras[0].lower() == categoria.lower():
+        palabras = palabras[1:]
+    
+    observacion = " ".join(palabras)
+        
     categoria = detectar_categoria(texto_sin_monto)
     fecha = detectar_fecha(texto_sin_monto)
 
@@ -99,7 +108,7 @@ def parse_message(text):
         "categoria": categoria,
         "mes": fecha,
         "monto": monto,
-        "observacion": texto_sin_monto
+        "observacion": observacion
     }
 
 ############################
