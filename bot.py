@@ -6,15 +6,8 @@ import json
 import gspread
 from google.oauth2.service_account import Credentials
 
-creds_dict = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
-
-scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-
-creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
-
-client = gspread.authorize(creds)
-
-sheet = client.open("Gastos").sheet1
+################
+#Token telegram:
 
 logging.basicConfig(level=logging.INFO)
 
@@ -25,6 +18,23 @@ if not TOKEN:
 
 print("Token cargado OK")
 
+################
+#Sheet:
+creds_dict = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
+
+scopes = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+
+creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+
+client = gspread.authorize(creds)
+
+sheet = client.open_by_key("1kJoP9KJt8BqGVZLwCV96OtADYXBV1gP3oaiJOIZJ_gU").worksheet("Gastos")
+
+
+#####################3
 import re
 
 def parse_message(text):
@@ -40,7 +50,6 @@ def parse_message(text):
         "mes": mes,
         "monto": float(monto)
     }
-
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
