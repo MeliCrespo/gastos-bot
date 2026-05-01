@@ -2,6 +2,19 @@ import os
 import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
+import json
+import gspread
+from google.oauth2.service_account import Credentials
+
+creds_dict = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
+
+scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+
+creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+
+client = gspread.authorize(creds)
+
+sheet = client.open("Gastos").sheet1
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,7 +50,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not data:
         await update.message.reply_text("Formato inválido😅")
         return
-
+        
+    sheet.append_row([
+        data["mes"],
+        data["categoria"],
+        data["monto"]
+    ])    
+    
     await update.message.reply_text(
         f"Registrado:\n"
         f"Categoría: {data['categoria']}\n"
@@ -55,3 +74,5 @@ try:
 except Exception as e:
     print("ERROR REAL:", e)
     raise
+
+
